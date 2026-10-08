@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  learningGoals LearningGoal[]
+}
+
+model LearningGoal {
+  id             String    @id @default(cuid())
+  subject        String
+  goal           String
+  dailyStudyTime String
+  studyDays      String
+  currentLevel   String
+  targetDate     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  materials StudyMaterial[]
+}
+
+model StudyMaterial {
+  id         String   @id @default(cuid())
+  fileName   String
+  fileUrl    String
+  fileType   String
+  fileSize   Int?
+  uploadedAt DateTime @default(now())
+
+  learningGoalId String
+  learningGoal   LearningGoal @relation(fields: [learningGoalId], references: [id], onDelete: Cascade)
+}
